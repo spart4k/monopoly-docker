@@ -1,0 +1,32 @@
+version: "3"
+services:
+  mongo:
+    container_name: mongo
+    hostname: mongo
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data
+  server:
+    build: backend/
+    #command: node ./server.js #здесь можно перезаписать CMD из Dockerfile в /server
+    ports:
+      - "3000:3000"
+    links:
+      - mongo
+    volumes:
+      - ./backend:/backend
+  client:
+    build:
+      context: frontend/
+    #command: http-server ./dist #здесь можно перезаписать CMD из Dockerfile в /client
+    ports:
+      - "8089:8089"
+    volumes:
+      - ./frontend:/frontend
+    depends_on:
+      - server
